@@ -1,0 +1,96 @@
+{
+  "name": "@hyperjumptech/prisma-seeder",
+  "version": "0.0.8",
+  "description": "CLI tool to easily seed database from a prisma schema file",
+  "author": "@hyperjumptech",
+  "bin": {
+    "prisma-seeder": "./bin/run"
+  },
+  "homepage": "https://github.com/hyperjumptech/prisma-seeder",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": "hyperjumptech/prisma-seeder",
+  "files": [
+    "/bin",
+    "/dist",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "dependencies": {
+    "@oclif/core": "^1.20.2",
+    "@oclif/plugin-help": "^5",
+    "@oclif/plugin-plugins": "^2.1.6",
+    "@prisma/client": "4.5.0",
+    "dotenv": "^16.0.3",
+    "prisma": "4.5.0",
+    "prisma-json-schema-generator": "^3.1.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@oclif/test": "^2.2.6",
+    "@types/chai": "^4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.11.65",
+    "@types/uuid": "^8.3.4",
+    "chai": "^4",
+    "eslint": "^7.32.0",
+    "eslint-config-oclif": "^4",
+    "eslint-config-oclif-typescript": "^1.0.3",
+    "eslint-config-prettier": "^8.5.0",
+    "mocha": "^9",
+    "oclif": "^3",
+    "pkg": "^5.8.0",
+    "prettier": "^2.7.1",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.4"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "oclif": {
+    "bin": "prisma-seeder",
+    "dirname": "prisma-seeder",
+    "commands": "./dist/commands",
+    "default": ".",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "hello": {
+        "description": "Say hello to the world and others"
+      }
+    }
+  },
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "yarn lint",
+    "prepack": "yarn build && oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "pkg": "npm run prepack && pkg . --compress brotli",
+    "version": "oclif readme && git add README.md"
+  },
+  "pkg": {
+    "scripts": [
+      "./lib/**/*.js"
+    ],
+    "targets": [
+      "node14-linux-x64"
+    ],
+    "outputPath": "dist"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "bugs": "https://github.com/hyperjumptech/prisma-seeder/issues",
+  "keywords": [
+    "oclif"
+  ],
+  "types": "dist/index.d.ts"
+}
