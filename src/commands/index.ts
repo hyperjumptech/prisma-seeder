@@ -1,7 +1,6 @@
 import { Command, Flags } from '@oclif/core'
 import { execSync } from 'node:child_process'
 import * as fs from 'node:fs'
-import { updateEnv } from '../scripts/env-edit'
 import { v4 as uuidv4 } from 'uuid'
 
 let prisma: any
@@ -43,15 +42,22 @@ Finish seeding.
       `The schema path: ${flags.schema} \nand the DB url: ${flags['database-url']}`
     )
 
-    // update env DB
-    this.log('Updating env...')
-    updateEnv('./.env', 'DATABASE_URL', flags['database-url'])
+    const schemaPrismaPath = 'prisma-seeder-temp/schema.prisma'
 
     // copy prisma schema file
     this.log('Copying schema file...')
     execSync('rm -rf prisma-seeder-temp')
     execSync('mkdir prisma-seeder-temp')
-    execSync(`cp ${flags.schema} ./prisma-seeder-temp/schema.prisma`)
+    execSync(`cp ${flags.schema} ${schemaPrismaPath}`)
+
+    // update env DB
+    this.log('Updating DATABASE_URL...')
+    const schemaText = fs.readFileSync(schemaPrismaPath, 'utf8')
+    const updatedSchemaText = schemaText.replace(
+      'env("DATABASE_URL")',
+      `"${flags['database-url']}"`
+    )
+    fs.writeFileSync(schemaPrismaPath, updatedSchemaText)
 
     // insert json schema generator config
     this.log('Inserting json generator config...')
@@ -61,9 +67,9 @@ generator jsonSchema {
   keepRelationScalarFields = "true"
   includeRequiredFields = "true"
 }`
-    fs.appendFileSync('./prisma-seeder-temp/schema.prisma', generatorConfig)
+    fs.appendFileSync(schemaPrismaPath, generatorConfig)
 
-    const prismaTempLocation = '--schema=./prisma-seeder-temp/schema.prisma'
+    const prismaTempLocation = `--schema=./${schemaPrismaPath}`
 
     // generate json file and prisma client
     this.log('Generating prisma schema...')
@@ -73,7 +79,9 @@ generator jsonSchema {
       // reset DB
       this.log('Resetting DB...')
       execSync('rm -rf migrations')
-      execSync(`npx prisma migrate reset --force --skip-generate ${prismaTempLocation}`)
+      execSync(
+        `npx prisma migrate reset --force --skip-generate ${prismaTempLocation}`
+      )
 
       // migrate DB
       this.log('Migrating DB...')
@@ -90,7 +98,10 @@ generator jsonSchema {
 
     // read from json file
     this.log('Reading json schema...')
-    const text = fs.readFileSync('prisma-seeder-temp/json-schema/json-schema.json', 'utf8')
+    const text = fs.readFileSync(
+      'prisma-seeder-temp/json-schema/json-schema.json',
+      'utf8'
+    )
     const jsonFile = JSON.parse(text)
     const models = Object.keys(jsonFile.definitions)
 

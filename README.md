@@ -20,7 +20,6 @@ npm install -g @hyperjumptech/prisma-seeder
 ```
 prisma-seeder --schema <path_to_schema_prisma_file> --database-url <url_of_the_database>
 ```
-*if there is no `.env` file, you have to create empty `.env` file first, in the directory where you run this command
 
 # Development
 clone the repo, then install dependencies using
@@ -34,7 +33,6 @@ then run
 ```
 ./bin/dev --schema <path_to_schema_prisma_file> --database-url <url_of_the_database>
 ```
-*if there is no `.env` file, you have to create empty `.env` file first, in the directory where you run this command
 
 # License
 
