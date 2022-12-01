@@ -1,6 +1,6 @@
 {
   "name": "@hyperjumptech/prisma-seeder",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "CLI tool to easily seed database from a prisma schema file",
   "author": "@hyperjumptech",
   "bin": {
