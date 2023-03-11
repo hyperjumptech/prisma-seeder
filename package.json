@@ -17,34 +17,36 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
-    "@oclif/core": "^1.20.2",
+    "@oclif/core": "^2.6.2",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.1.6",
-    "@prisma/client": "4.5.0",
+    "@oclif/plugin-plugins": "^2.4.1",
+    "@prisma/client": "4.11.0",
+    "concurrently": "^7.6.0",
     "dotenv": "^16.0.3",
-    "prisma": "4.5.0",
-    "prisma-json-schema-generator": "^3.1.1",
-    "uuid": "^9.0.0"
+    "prisma": "4.11.0",
+    "prisma-json-schema-generator": "^3.1.3",
+    "uuid": "^9.0.0",
+    "wait-port": "^1.0.4"
   },
   "devDependencies": {
-    "@oclif/test": "^2.2.6",
+    "@oclif/test": "^2.3.10",
     "@types/chai": "^4",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^16.11.65",
-    "@types/uuid": "^9.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.15.0",
+    "@types/uuid": "^9.0.1",
     "chai": "^4",
-    "eslint": "^7.32.0",
+    "eslint": "^8.36.0",
     "eslint-config-oclif": "^4",
     "eslint-config-oclif-typescript": "^1.0.3",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-prettier": "^8.7.0",
     "mocha": "^9",
     "oclif": "^3",
-    "pkg": "^5.8.0",
-    "prettier": "^2.7.1",
+    "pkg": "^5.8.1",
+    "prettier": "^2.8.4",
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
-    "tslib": "^2.4.0",
-    "typescript": "^4.8.4"
+    "tslib": "^2.5.0",
+    "typescript": "^4.9.5"
   },
   "prettier": {
     "semi": false,
@@ -61,8 +63,8 @@
     ],
     "topicSeparator": " ",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
+      "prisma-seeder": {
+        "description": "Seeding prisma backed database"
       }
     }
   },
@@ -70,11 +72,13 @@
     "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint",
-    "prepack": "yarn build && oclif manifest && oclif readme",
+    "prepack": "npm build && oclif manifest && oclif readme",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "pkg": "npm run prepack && pkg . --compress brotli",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "startdbdev": "cp env.example .env && cd dev && mkdir -p data && docker-compose up",
+    "prismamigrate": "npx prisma migrate dev --schema ./schema.example.prisma",
+    "dbsetup": "concurrently \"npm run startdbdev\" \"wait-port localhost:5432 && npm run prismamigrate\""
   },
   "pkg": {
     "scripts": [

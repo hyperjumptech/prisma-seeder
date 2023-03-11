@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  courses_postgres:
+    image: postgres:13-alpine
+    container_name: prisma-seeder
+    ports:
+      - 5432:5432
+    env_file:
+      - ../.env
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    restart: unless-stopped

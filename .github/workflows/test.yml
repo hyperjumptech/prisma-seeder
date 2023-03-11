@@ -1,9 +1,49 @@
-name: tests
+name: Test
 on:
-  push:
-    branches-ignore: [main]
   workflow_dispatch:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
 
 jobs:
-  unit-tests:
-    uses: oclif/github-workflows/.github/workflows/unitTest.yml@main
+  # Label of the container job
+  run-test:
+    # You must use a Linux environment when using service containers or container jobs
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: prisma
+          POSTGRES_PASSWORD: password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Set env
+        run: cp env.example .env
+      - name: Install dependencies
+        run: npm ci
+      - name: Run migration
+        run: npm run prismamigrate
+      - name: Test
+        run: npm run test
